@@ -16,11 +16,11 @@ module tt_um_example (
     input  wire       rst_n     // reset_n - low to reset
 );
 
-    // Control signals from ui_in - FIXED: Correct bit width declarations
+    // Control signals from ui_in - CRITICAL FIX: Proper bit width declarations
     wire [1:0] precision_sel = ui_in[7:6];  // 00=8bit, 01=16bit, 10=32bit
     wire [2:0] alu_op = ui_in[5:3];         // ALU operation select
     wire data_load = ui_in[2];              // Load data signal
-    wire [1:0] result_sel = ui_in[1:0];     // FIXED: Declared as [1:0] instead of single bit
+    wire [1:0] result_sel = ui_in[1:0];     // FIXED: Must be [1:0] not single wire
     
     // Internal registers for multi-precision operands
     reg [31:0] operand_a;
@@ -32,19 +32,19 @@ module tt_um_example (
     reg [1:0] load_state; // 0=idle, 1=loading_a, 2=loading_b, 3=compute
     
     // ALU operations
-    parameter ALU_ADD  = 3'b000;
-    parameter ALU_SUB  = 3'b001;
-    parameter ALU_AND  = 3'b010;
-    parameter ALU_OR   = 3'b011;
-    parameter ALU_XOR  = 3'b100;
-    parameter ALU_SHL  = 3'b101;
-    parameter ALU_SHR  = 3'b110;
-    parameter ALU_CMP  = 3'b111;
+    localparam ALU_ADD  = 3'b000;
+    localparam ALU_SUB  = 3'b001;
+    localparam ALU_AND  = 3'b010;
+    localparam ALU_OR   = 3'b011;
+    localparam ALU_XOR  = 3'b100;
+    localparam ALU_SHL  = 3'b101;
+    localparam ALU_SHR  = 3'b110;
+    localparam ALU_CMP  = 3'b111;
     
     // Precision parameters
-    parameter PREC_8BIT  = 2'b00;
-    parameter PREC_16BIT = 2'b01;
-    parameter PREC_32BIT = 2'b10;
+    localparam PREC_8BIT  = 2'b00;
+    localparam PREC_16BIT = 2'b01;
+    localparam PREC_32BIT = 2'b10;
     
     // Status flags
     reg carry_flag, zero_flag, negative_flag, overflow_flag;
@@ -149,6 +149,7 @@ module tt_um_example (
                                 ALU_SHL: alu_result[7:0] <= operand_a[7:0] << operand_b[2:0];
                                 ALU_SHR: alu_result[7:0] <= operand_a[7:0] >> operand_b[2:0];
                                 ALU_CMP: alu_result[7:0] <= (operand_a[7:0] == operand_b[7:0]) ? 8'h00 : 8'hFF;
+                                default: alu_result[7:0] <= 8'h00;
                             endcase
                             zero_flag <= (alu_result[7:0] == 8'h00);
                             negative_flag <= alu_result[7];
@@ -164,6 +165,7 @@ module tt_um_example (
                                 ALU_SHL: alu_result[15:0] <= operand_a[15:0] << operand_b[3:0];
                                 ALU_SHR: alu_result[15:0] <= operand_a[15:0] >> operand_b[3:0];
                                 ALU_CMP: alu_result[15:0] <= (operand_a[15:0] == operand_b[15:0]) ? 16'h0000 : 16'hFFFF;
+                                default: alu_result[15:0] <= 16'h0000;
                             endcase
                             zero_flag <= (alu_result[15:0] == 16'h0000);
                             negative_flag <= alu_result[15];
@@ -179,9 +181,17 @@ module tt_um_example (
                                 ALU_SHL: alu_result <= operand_a << operand_b[4:0];
                                 ALU_SHR: alu_result <= operand_a >> operand_b[4:0];
                                 ALU_CMP: alu_result <= (operand_a == operand_b) ? 32'h00000000 : 32'hFFFFFFFF;
+                                default: alu_result <= 32'h00000000;
                             endcase
                             zero_flag <= (alu_result == 32'h00000000);
                             negative_flag <= alu_result[31];
+                        end
+                        
+                        default: begin
+                            alu_result <= 32'h00000000;
+                            carry_flag <= 1'b0;
+                            zero_flag <= 1'b0;
+                            negative_flag <= 1'b0;
                         end
                     endcase
                     
@@ -201,14 +211,14 @@ module tt_um_example (
             end
             
             PREC_16BIT: begin
-                case (result_sel[0])  // FIXED: Now accessing bit 0 of 2-bit signal
+                case (result_sel[0])
                     1'b0: output_data = alu_result[7:0];   // Lower byte
                     1'b1: output_data = alu_result[15:8];  // Upper byte
                 endcase
             end
             
             PREC_32BIT: begin
-                case (result_sel)     // FIXED: Now using full 2-bit result_sel
+                case (result_sel)
                     2'b00: output_data = alu_result[7:0];   // Byte 0
                     2'b01: output_data = alu_result[15:8];  // Byte 1
                     2'b10: output_data = alu_result[23:16]; // Byte 2
