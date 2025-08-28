@@ -1,18 +1,15 @@
 # Tiny Tapeout project information
 project:
-  title:        ""      # Project title
-  author:       ""      # Your name
+  title:        "Multi-Precision ALU (8/16/32-bit Support)"
+  author:       "Your Name"
   discord:      ""      # Your discord username, for communication and automatically assigning you a Tapeout role (optional)
-  description:  ""      # One line description of what your project does
-  language:     "Verilog" # other examples include SystemVerilog, Amaranth, VHDL, etc
-  clock_hz:     0       # Clock frequency in Hz (or 0 if not applicable)
-
+  description:  "Configurable arithmetic logic unit supporting 8, 16, and 32-bit operations with multiple functions"
+  language:     "Verilog"
+  clock_hz:     10000000  # 10 MHz clock frequency
   # How many tiles your design occupies? A single tile is about 167x108 uM.
-  tiles: "1x1"          # Valid values: 1x1, 1x2, 2x2, 3x2, 4x2, 6x2 or 8x2
-
+  tiles: "1x1"
   # Your top module name must start with "tt_um_". Make it unique by including your github username:
   top_module:  "tt_um_example"
-
   # List your project's source files here.
   # Source files must be in ./src and you must list each source file separately, one per line.
   # Don't forget to also update `PROJECT_SOURCES` in test/Makefile.
@@ -23,34 +20,34 @@ project:
 # This section is for the datasheet/website. Use descriptive names (e.g., RX, TX, MOSI, SCL, SEG_A, etc.).
 pinout:
   # Inputs
-  ui[0]: ""
-  ui[1]: ""
-  ui[2]: ""
-  ui[3]: ""
-  ui[4]: ""
-  ui[5]: ""
-  ui[6]: ""
-  ui[7]: ""
-
+  ui[0]: "RESULT_SEL_0"     # Result byte select bit 0
+  ui[1]: "RESULT_SEL_1"     # Result byte select bit 1
+  ui[2]: "DATA_LOAD"        # Data load enable signal
+  ui[3]: "ALU_OP_0"         # ALU operation select bit 0
+  ui[4]: "ALU_OP_1"         # ALU operation select bit 1
+  ui[5]: "ALU_OP_2"         # ALU operation select bit 2
+  ui[6]: "PREC_SEL_0"       # Precision select bit 0 (00=8bit, 01=16bit, 10=32bit)
+  ui[7]: "PREC_SEL_1"       # Precision select bit 1
+  
   # Outputs
-  uo[0]: ""
-  uo[1]: ""
-  uo[2]: ""
-  uo[3]: ""
-  uo[4]: ""
-  uo[5]: ""
-  uo[6]: ""
-  uo[7]: ""
-
+  uo[0]: "RESULT_0"         # Result data bit 0
+  uo[1]: "RESULT_1"         # Result data bit 1
+  uo[2]: "RESULT_2"         # Result data bit 2
+  uo[3]: "RESULT_3"         # Result data bit 3
+  uo[4]: "RESULT_4"         # Result data bit 4
+  uo[5]: "RESULT_5"         # Result data bit 5
+  uo[6]: "RESULT_6"         # Result data bit 6
+  uo[7]: "RESULT_7"         # Result data bit 7
+  
   # Bidirectional pins
-  uio[0]: ""
-  uio[1]: ""
-  uio[2]: ""
-  uio[3]: ""
-  uio[4]: ""
-  uio[5]: ""
-  uio[6]: ""
-  uio[7]: ""
+  uio[0]: "DATA_IN_0"       # Input: Data input bit 0
+  uio[1]: "DATA_IN_1"       # Input: Data input bit 1
+  uio[2]: "DATA_IN_2"       # Input: Data input bit 2
+  uio[3]: "DATA_IN_3"       # Input: Data input bit 3
+  uio[4]: "CARRY_FLAG"      # Output: Carry flag
+  uio[5]: "ZERO_FLAG"       # Output: Zero flag
+  uio[6]: "NEG_FLAG"        # Output: Negative flag
+  uio[7]: "OVFL_FLAG"       # Output: Overflow flag
 
 # Do not change!
 yaml_version: 6
