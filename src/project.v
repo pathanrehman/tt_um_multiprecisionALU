@@ -16,11 +16,11 @@ module tt_um_example (
     input  wire       rst_n     // reset_n - low to reset
 );
 
-    // Control signals from ui_in
+    // Control signals from ui_in - FIXED: Correct bit width declarations
     wire [1:0] precision_sel = ui_in[7:6];  // 00=8bit, 01=16bit, 10=32bit
     wire [2:0] alu_op = ui_in[5:3];         // ALU operation select
     wire data_load = ui_in[2];              // Load data signal
-    wire result_sel = ui_in[1:0];           // Result output select (for 32-bit)
+    wire [1:0] result_sel = ui_in[1:0];     // FIXED: Declared as [1:0] instead of single bit
     
     // Internal registers for multi-precision operands
     reg [31:0] operand_a;
@@ -201,14 +201,14 @@ module tt_um_example (
             end
             
             PREC_16BIT: begin
-                case (result_sel[0])
+                case (result_sel[0])  // FIXED: Now accessing bit 0 of 2-bit signal
                     1'b0: output_data = alu_result[7:0];   // Lower byte
                     1'b1: output_data = alu_result[15:8];  // Upper byte
                 endcase
             end
             
             PREC_32BIT: begin
-                case (result_sel)
+                case (result_sel)     // FIXED: Now using full 2-bit result_sel
                     2'b00: output_data = alu_result[7:0];   // Byte 0
                     2'b01: output_data = alu_result[15:8];  // Byte 1
                     2'b10: output_data = alu_result[23:16]; // Byte 2
